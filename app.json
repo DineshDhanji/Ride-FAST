@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#18181B"
+        "backgroundColor": "#18181b"
       },
       "package": "com.dinesh.dhanjee.RideFAST"
     },
@@ -31,25 +31,13 @@
           "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#18181B"
+          "backgroundColor": "#18181b"
         }
       ],
       [
         "expo-font",
         {
           "fonts": ["./assets/fonts/Parkinsans.ttf"]
-        }
-      ],
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#18181B",
-          "image": "./assets/images/splash.png",
-          "dark": {
-            "image": "./assets/images/splash.png",
-            "backgroundColor": "#18181B"
-          },
-          "imageWidth": 200
         }
       ]
     ],
