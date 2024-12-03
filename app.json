@@ -28,7 +28,6 @@
       [
         "expo-splash-screen",
         {
-          // "image": "./assets/images/splash.png",
           "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
@@ -39,6 +38,18 @@
         "expo-font",
         {
           "fonts": ["./assets/fonts/Parkinsans.ttf"]
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#18181B",
+          "image": "./assets/images/splash.png",
+          "dark": {
+            "image": "./assets/images/splash.png",
+            "backgroundColor": "#18181B"
+          },
+          "imageWidth": 200
         }
       ]
     ],
