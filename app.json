@@ -23,16 +23,28 @@
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
         {
+          "backgroundColor": "#f4f4f5",
           "image": "./assets/images/splash.png",
+          "dark": {
+            "image": "./assets/images/splash.png",
+            "backgroundColor": "#18181b"
+          },
           "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#18181b"
+          "resizeMode": "contain"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
