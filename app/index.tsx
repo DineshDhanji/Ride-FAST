@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-
+import { colors } from "@/assets/palette/colors";
 export default function Index() {
   return (
     <View
@@ -9,7 +9,9 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text className="text-lg" style={{ color: colors.zinc[300] }}>
+        Edit app/index.tsx to edit this screen.
+      </Text>
     </View>
   );
 }
