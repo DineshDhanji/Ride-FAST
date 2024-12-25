@@ -33,48 +33,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: (username, password) => {
-          const apiUrl = process.env.EXPO_PUBLIC_BASE_API_URL;
-          if (apiUrl === undefined) {
-            console.error("Base API URL is not defined");
-            return;
-          }
-
-          const getToken = async () => {
-            try {
-              const response = await fetch(`${apiUrl}/api/get_csrf_token`);
-              const data = await response.json();
-              return data.csrf_token;
-            } catch (error) {
-              console.error("Error fetching CSRF token:", error);
-            }
-            return null;
-          };
-
-          const url = apiUrl + "/api/login";
-          console.log("URL: ", url);
-          getToken().then((csrfToken) => {
-            axios
-              .post(
-                url,
-                {
-                  username: username,
-                  password: password,
-                },
-                {
-                  headers: {
-                    "X-CSRFToken": csrfToken, // Send the CSRF token in the header
-                  },
-                }
-              )
-              .then((response) => {
-                console.log("response", response);
-                // setSession("123456");
-              })
-              .catch((error) => {
-                console.error("error", error);
-              });
-          });
+        signIn: () => {
           // Perform sign-in logic here
           // setSession("123456");
         },
