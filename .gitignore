@@ -3,9 +3,6 @@
 # dependencies
 node_modules/
 
-# VS Code
-.vscode/
-
 # Expo
 .expo/
 dist/
@@ -19,11 +16,6 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
-
-# Builds
-android/
-ios/
-web/
 
 # Metro
 .metro-health-check*
@@ -42,3 +34,5 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+app-example

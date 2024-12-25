@@ -15,13 +15,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#18181b"
-      },
-      "package": "com.dinesh.dhanjee.RideFAST"
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
@@ -32,12 +31,6 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#18181b"
-        }
-      ],
-      [
-        "expo-font",
-        {
-          "fonts": ["./assets/fonts/Parkinsans.ttf"]
         }
       ]
     ],
