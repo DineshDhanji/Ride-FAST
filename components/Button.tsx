@@ -19,7 +19,7 @@ export function Button({
     >
       <Text
         numberOfLines={numberOfLines}
-        className="text-zinc-50 dark:text-zinc-950 text-center"
+        className="text-zinc-50 dark:text-zinc-950 text-center font-semibold"
       >
         {title}
       </Text>
