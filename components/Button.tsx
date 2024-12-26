@@ -11,18 +11,18 @@ export function Button({
   return (
     <RP_Button
       className="my-1"
-      mode="contained"
+      textColor={colorScheme == "dark" ? colors.zinc[900] : colors.zinc[200]}
       buttonColor={colorScheme == "dark" ? colors.zinc[200] : colors.zinc[900]}
       style={{ borderRadius: 5 }}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text
-        numberOfLines={numberOfLines}
+      {title}
+      {/* <Text
+        // numberOfLines={numberOfLines}
         className="text-zinc-50 dark:text-zinc-950 text-center font-semibold"
       >
-        {title}
-      </Text>
+      </Text> */}
     </RP_Button>
     // <Pressable
     //   className="bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600  border rounded-lg py-2 px-3 my-1"

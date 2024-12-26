@@ -2,15 +2,40 @@ import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { colors } from "@/assets/palette/colors";
+import Ionicon from "@expo/vector-icons/Ionicons";
 
 export default function AppLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <>
-      <StatusBar />
+      <StatusBar
+        animated={true}
+        backgroundColor={
+          colorScheme === "dark" ? colors.zinc[900] : colors.zinc[100]
+        }
+      />
       <Tabs
-        screenOptions={{
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName = "";
+            // size = focused ? size + 4 : size;
+
+            if (route.name === "search") {
+              iconName = focused ? "search" : "search-outline";
+            } else if (route.name === "(rides)") {
+              iconName = focused ? "car-sport" : "car-sport-outline";
+            } else if (route.name === "(home)") {
+              iconName = focused ? "home" : "home-outline";
+            } else if (route.name === "profile") {
+              iconName = focused ? "person" : "person-outline";
+            } else if (route.name === "notifications") {
+              iconName = focused ? "notifications" : "notifications-outline";
+            }
+
+            return <Ionicon name={iconName} size={size} color={color} />;
+          },
+
           headerTintColor:
             colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900],
           headerStyle: {
@@ -18,12 +43,54 @@ export default function AppLayout() {
               colorScheme === "dark" ? colors.zinc[900] : colors.zinc[100],
           },
           tabBarHideOnKeyboard: true,
-        }}
+          tabBarStyle: {
+            backgroundColor:
+              colorScheme === "dark" ? colors.zinc[900] : colors.zinc[100],
+          },
+          tabBarActiveTintColor:
+            colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900],
+          tabBarInactiveTintColor:
+            colorScheme === "dark" ? colors.zinc[500] : colors.zinc[600],
+          tabBarActiveBackgroundColor:
+            colorScheme === "dark" ? colors.zinc[950] : colors.zinc[200],
+          tabBarAllowFontScaling: true,
+        })}
       >
-        <Tabs.Screen name="search" options={{ title: "Search" }} />
-        <Tabs.Screen name="rides" options={{ title: "Rides" }} />
-        <Tabs.Screen name="index" options={{ title: "Home" }} />
-        <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+        <Tabs.Screen
+          name="search"
+          options={{
+            title: "Search",
+            tabBarAccessibilityLabel: "Search Rides",
+            headerShown: false,
+          }}
+        />
+        <Tabs.Screen
+          name="(rides)"
+          options={{
+            headerShown: false,
+            tabBarAccessibilityLabel: "Offer a Ride",
+            tabBarLabel: "Ride",
+          }}
+        />
+        <Tabs.Screen
+          name="(home)"
+          options={{
+            title: "Home",
+            headerShown: false,
+            tabBarAccessibilityLabel: "Home",
+          }}
+        />
+        <Tabs.Screen
+          name="notifications"
+          options={{
+            title: "Notifications",
+            tabBarAccessibilityLabel: "Notifications",
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{ title: "Profile", tabBarAccessibilityLabel: "Profile" }}
+        />
       </Tabs>
     </>
   );

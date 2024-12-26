@@ -14,7 +14,6 @@ export const colors = {
   },
 };
 
-
 // Dark Mode
 // text: 50
 // text input: 700
