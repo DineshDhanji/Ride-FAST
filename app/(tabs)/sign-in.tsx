@@ -9,8 +9,8 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
   const navigation = useNavigation();
+
   return (
     <SafeAreaView className="flex-1 bg-zinc-50">
       <StatusBar style="dark" />
@@ -84,7 +84,7 @@ export default function LoginScreen() {
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity onPress={() => navigation.navigate('sign-up')} className="w-full bg-zinc-900 py-4 rounded-full items-center mt-4">
+          <TouchableOpacity onPress={() => navigation.navigate("sign-up")} className="w-full bg-zinc-900 py-4 rounded-full items-center mt-4">
             <Text className="text-white font-semibold text-xl">Login</Text>
           </TouchableOpacity>
 
