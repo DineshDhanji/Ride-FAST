@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useSession } from "@/session/ctx";
 import { Link } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Appearance, useColorScheme } from "react-native";
 import axios from "axios";
 import { Button } from "@/components/Button";
@@ -42,7 +41,7 @@ export default function Index() {
   console.log("Session", session);
   return (
     <View className="flex-1 p-3">
-      <StatusBar />
+      
 
       <Text className="text-zinc-900 text-3xl mb-3">Main App Index</Text>
       <View className="flex flex-col items-center justify-start h-max">
