@@ -33,9 +33,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
+        signIn: (accessToken, refreshToken) => {
           // Perform sign-in logic here
-          // setSession("123456");
+          setSession(accessToken);
         },
         signOut: () => {
           setSession(null);
@@ -48,5 +48,3 @@ export function SessionProvider({ children }: PropsWithChildren) {
     </AuthContext.Provider>
   );
 }
-
-const signInHandler = () => {};

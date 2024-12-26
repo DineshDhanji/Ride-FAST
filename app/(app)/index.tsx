@@ -3,12 +3,43 @@ import { useSession } from "@/session/ctx";
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Appearance, useColorScheme } from "react-native";
+import axios from "axios";
+import { Button } from "@/components/Button";
+import { checkUser } from "@/session/checkUser";
 
 export default function Index() {
-  const { signIn, signOut, session, isLoading } = useSession();
+  const { signOut, session, isLoading } = useSession();
   let colorScheme = useColorScheme();
-  console.log("colorScheme", colorScheme);
 
+  const logoutHandler = async () => {
+    const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
+    if (BASE_URL === undefined) {
+      console.error("Base API URL is not defined");
+      return;
+    }
+
+    const apiURL = BASE_URL + "/api/auth/logout";
+
+    // Perform sign-out logic here
+    axios
+      .post(
+        apiURL,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      )
+      .then(() => {
+        signOut();
+      })
+      .catch((error) => {
+        console.error("Error logging out", error);
+      });
+  };
+
+  console.log("Session", session);
   return (
     <View className="flex-1 p-3">
       <StatusBar />
@@ -20,18 +51,9 @@ export default function Index() {
             <Text className="text-zinc-50 text-lg text-center">SiteMap</Text>
           </TouchableOpacity>
         </Link>
+
         <TouchableOpacity
-          onPress={() => {
-            signIn();
-          }}
-          className="w-full bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700 text-zinc-50 border border-zinc-950 rounded-lg py-2 px-3 text-center my-1"
-        >
-          <Text className="text-zinc-50 text-lg text-center">Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            signOut();
-          }}
+          onPress={logoutHandler}
           className="w-full bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700 text-zinc-50 border border-zinc-950 rounded-lg py-2 px-3 text-center my-1"
         >
           <Text className="text-zinc-50 text-lg text-center">Sign Out</Text>
@@ -47,17 +69,8 @@ export default function Index() {
           <Text className="text-lg">{isLoading ? "True" : "False"}</Text>
         </View>
       </View>
-      
-      <View className="bg-zinc-200 p-3 rounded-lg border border-zinc-950 m-3">
-        <Text className="text-xl text-zinc-950">Konnichiiwa</Text>
-      </View>
-      <View className="bg-zinc-800 p-3 rounded-lg border border-zinc-50 m-3">
-        <Text className="text-xl text-zinc-50">Konnichiiwa</Text>
-      </View>
-      <View className="bg-zinc-200 border-zinc-950 dark:bg-zinc-800 dark:border-zinc-50 p-3 rounded-lg border m-3">
-        <Text className="text-xl text-zinc-950 dark:text-zinc-50">Konnichiiwa</Text>
-      </View>
 
+      <Button onPress={() => checkUser(session)} title="Check Status"></Button>
     </View>
   );
 }

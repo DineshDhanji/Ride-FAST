@@ -3,6 +3,7 @@ import { View, Text, TextInput, SafeAreaView } from "react-native";
 import { Link, Redirect, useNavigation, useRouter } from "expo-router";
 import { useSession } from "@/session/ctx";
 import { getToken } from "@/session/getToken";
+import { checkUser } from "@/session/checkUser";
 
 import axios from "axios";
 
@@ -16,6 +17,7 @@ export default function SignIn() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loginButtonDisabled, setLoginButtonDisabled] = useState(false);
   const alertBoxRef = useRef(null);
 
   const loginHandler = async () => {
@@ -25,41 +27,35 @@ export default function SignIn() {
       return;
     }
 
-    const apiURL = BASE_URL + "/api/login";
-    const csrfToken = await getToken();
-
+    const apiURL = BASE_URL + "/api/auth/login";
+    // const csrfToken = await getToken();
+    setLoginButtonDisabled(true);
     axios
-      .post(
-        apiURL,
-        {
-          username: username,
-          password: password,
-        },
-        {
-          headers: {
-            "X-CSRFToken": csrfToken, // Send the CSRF token in the header
-          },
-        }
-      )
+      .post(apiURL, {
+        username: username,
+        password: password,
+      })
       .then((response) => {
-        console.log("response", response);
-        // setSession("123456");
+        const data = response.data;
+        const accessToken = data.access;
+        const refreshToken = data.refresh;
+        signIn(accessToken, refreshToken);
       })
       .catch((error) => {
         if (error.response) {
-          console.error("Response error:", error.response.data);
-        } else if (error.request) {
-          console.error("Request error:", error.request);
-        } else {
-          console.error("General error:", error.message);
+          let errorMessage = error.response.data.errorMessage;
+          console.log("Error:", errorMessage);
+          alertBoxRef.current.setMessage(errorMessage);
+          alertBoxRef.current.setMessageTitle("Login Error");
+          alertBoxRef.current.showModal();
         }
+      })
+      .finally(() => {
+        setLoginButtonDisabled(false);
       });
-    // .catch((error) => {
-    //   console.error("error", error);
-    //   console.error("error", error.response.data.data);
-    // });
   };
 
+  console.log("Session", session);
   // If the user is signed in, automatically redirect to the index page
   if (session) {
     return <Redirect href="/" />;
@@ -89,26 +85,20 @@ export default function SignIn() {
                 placeholder="Password"
                 onChangeText={setPassword}
               />
-              <Button onPress={loginHandler} title="Login"></Button>
+              <Button
+                onPress={loginHandler}
+                disabled={loginButtonDisabled}
+                title="Login"
+              ></Button>
             </View>
           </View>
           <View className="h-max mt-3">
             <Button
               onPress={() => {
-                const apiURL =
-                  process.env.EXPO_PUBLIC_BASE_API_URL + "/check_status";
-                fetch(apiURL)
-                  .then((response) => response.json())
-                  .then((data) => console.log(data));
-                console.log("apiURL", apiURL);
+                console.log("A");
+                checkUser();
               }}
               title="Check Status"
-            ></Button>
-            <Button
-              onPress={() => {
-                alertBoxRef.current.showModal();
-              }}
-              title="Alert"
             ></Button>
           </View>
         </View>

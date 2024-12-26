@@ -5,12 +5,20 @@ import { Button } from "@/components/Button";
 import { colors } from "@/assets/palette/colors";
 
 const AlertBox = forwardRef((props, ref) => {
-  const [visible, setVisible] = useState(false);
   let colorScheme = useColorScheme();
+
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageTitle, setMessageTitle] = useState("");
+  const [buttonTitle, setButtonTitle] = useState("oki");
+
   // Use useImperativeHandle to expose the showModal and hideModal functions
   useImperativeHandle(ref, () => ({
     showModal: () => setVisible(true),
     hideModal: () => setVisible(false),
+    setMessage: (message) => setMessage(message),
+    setMessageTitle: (messageTitle) => setMessageTitle(messageTitle),
+    setButtonTitle: (buttonTitle) => setButtonTitle(buttonTitle),
   }));
 
   const containerStyle = {
@@ -31,12 +39,18 @@ const AlertBox = forwardRef((props, ref) => {
           contentContainerStyle={containerStyle}
           dismissable={true}
         >
+          <Text className="text-zinc-950 dark:text-zinc-50 text-2xl font-semibold my-2">
+            {messageTitle}
+          </Text>
           <Text className="text-zinc-950 dark:text-zinc-50 text-lg">
-            Example Modal. Click outside this area to dismiss.
+            {message}
           </Text>
           <View className="flex items-end mt-5">
             <View className="w-1/2 ">
-              <Button onPress={() => setVisible(false)} title={"oki"}></Button>
+              <Button
+                onPress={() => setVisible(false)}
+                title={buttonTitle}
+              ></Button>
             </View>
           </View>
         </Modal>
