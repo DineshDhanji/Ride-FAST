@@ -1,63 +1,95 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { useSession } from "@/session/ctx";
-import { Link } from "expo-router";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { Appearance, useColorScheme } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
-export default function Index() {
-  const { signIn, signOut, session, isLoading } = useSession();
-  let colorScheme = useColorScheme();
-  console.log("colorScheme", colorScheme);
+export default function LoginScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
+  const navigation = useNavigation();
   return (
-    <View className="flex-1 p-3">
-      <StatusBar />
+    <SafeAreaView className="flex-1 bg-zinc-50">
+      <StatusBar style="dark" />
+      <View className="flex-1 px-6 pt-12">
+        {/* Logo */}
+        <View className="flex-row items-center mb-12 ml-8">
+          <Image
+            source={require("../../assets/images/icon.png")}
+            className="w-24 h-24 resize-contain rounded-2xl mt-12 mr-8"
+          />
+          <Text className="text-4xl text-zinc-500 mt-12 ">RIDE-FAST</Text>
+        </View>
 
-      <Text className="text-zinc-900 text-3xl mb-3">Main App Index</Text>
-      <View className="flex flex-col items-center justify-start h-max">
-        <Link asChild href={"/_sitemap"}>
-          <TouchableOpacity className="w-full bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700 text-zinc-50 border border-zinc-950 rounded-lg py-2 px-3 text-center my-1">
-            <Text className="text-zinc-50 text-lg text-center">SiteMap</Text>
+        {/* Login Form */}
+        <View className="space-y-6">
+          <View>
+            <Text className="text-2xl mt-12 font-semibold text-zinc-900">Login</Text>
+            <Text className="text-lg mt-2 mb-6 text-zinc-500">
+              Login to enjoy beautiful, safe ride with RIDE-FAST
+            </Text>
+          </View>
+
+          {/* Email Input */}
+          <View className="space-y-2">
+            <Text className="text-base text-zinc-500">Email</Text>
+            <TextInput
+              className="text-base w-full py-3 mb-8 text-zinc-900 bg-zinc-50 border-b-2 border-zinc-200 rounded-lg"
+              placeholder="sample@nu.edu.pk"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          {/* Password Input */}
+          <View className="space-y-2">
+            <Text className="text-base text-zinc-500">Password</Text>
+            <View className="relative">
+              <TextInput
+                className="text-base w-full py-3 text-zinc-900 bg-zinc-50 border-b-2 border-zinc-200 rounded-lg pr-12"
+                placeholder="••••••••••••"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity
+                className="absolute right-4 top-3"
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Feather
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={24}
+                  color="#71717a"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Forgot Password */}
+          <TouchableOpacity>
+            <Text className="text-base font-bold text-right text-zinc-900 underline mb-32">Forgot password?</Text>
           </TouchableOpacity>
-        </Link>
-        <TouchableOpacity
-          onPress={() => {
-            signIn();
-          }}
-          className="w-full bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700 text-zinc-50 border border-zinc-950 rounded-lg py-2 px-3 text-center my-1"
-        >
-          <Text className="text-zinc-50 text-lg text-center">Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            signOut();
-          }}
-          className="w-full bg-zinc-500 hover:bg-zinc-600 active:bg-zinc-700 text-zinc-50 border border-zinc-950 rounded-lg py-2 px-3 text-center my-1"
-        >
-          <Text className="text-zinc-50 text-lg text-center">Sign Out</Text>
-        </TouchableOpacity>
-      </View>
-      <View className="bg-zinc-200 p-3 rounded-lg border border-zinc-950 m-3">
-        <View className="flex flex-row items-center my-2">
-          <Text className="font-semibold me-3">Session:</Text>
-          <Text className="text-lg">{session}</Text>
-        </View>
-        <View className="flex flex-row items-center my-2">
-          <Text className="font-semibold me-3">Loading:</Text>
-          <Text className="text-lg">{isLoading ? "True" : "False"}</Text>
-        </View>
-      </View>
-      
-      <View className="bg-zinc-200 p-3 rounded-lg border border-zinc-950 m-3">
-        <Text className="text-xl text-zinc-950">Konnichiiwa</Text>
-      </View>
-      <View className="bg-zinc-800 p-3 rounded-lg border border-zinc-50 m-3">
-        <Text className="text-xl text-zinc-50">Konnichiiwa</Text>
-      </View>
-      <View className="bg-zinc-200 border-zinc-950 dark:bg-zinc-800 dark:border-zinc-50 p-3 rounded-lg border m-3">
-        <Text className="text-xl text-zinc-950 dark:text-zinc-50">Konnichiiwa</Text>
-      </View>
 
-    </View>
+          {/* Register Link */}
+          <View className="flex-row justify-center mt-6">
+            <Text className="text-base text-zinc-500">Don't have an account? </Text>
+            <TouchableOpacity>
+              <Text className="text-base font-bold text-zinc-900 underline">Register</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity onPress={() => navigation.navigate('sign-up')} className="w-full bg-zinc-900 py-4 rounded-full items-center mt-4">
+            <Text className="text-white font-semibold text-xl">Login</Text>
+          </TouchableOpacity>
+
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
