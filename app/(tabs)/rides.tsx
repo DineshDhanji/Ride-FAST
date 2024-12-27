@@ -1,17 +1,17 @@
-import { View, Text, StyleSheet } from 'react-native';
+// import { View, Text, StyleSheet } from 'react-native';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>Rides Page</Text>
-    </View>
-  );
-}
+// export default function HomeScreen() {
+//   return (
+//     <View style={styles.container}>
+//       <Text>Rides Page</Text>
+//     </View>
+//   );
+// }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+// });

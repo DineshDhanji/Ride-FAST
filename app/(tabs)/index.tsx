@@ -1,147 +1,101 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { useNavigation } from '@react-navigation/native';
-import ArrowLeft from "@expo/vector-icons/Feather";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from "@react-navigation/native";
+import Feather from "@expo/vector-icons/Feather"; // Import Feather once
+import { StackContext } from "@/app/(tabs)/_layout";
+import { useEffect, useState, useRef, useContext } from "react";
 
-export default function MyProfileScreen() {
+
+export default function ProfileScreen() {
   const navigation = useNavigation();
-  const [fullName, setFullName] = useState("User Name");
-  const [dateOfBirth, setDateOfBirth] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [gender, setGender] = useState("male");
-  const [mobileNumber, setMobileNumber] = useState("");
 
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setDateOfBirth(selectedDate);
-    }
-  };
+  // Menu items with icon names
+  const menuItems = [
+    { icon: "user", label: "My Profile" },
+    { icon: "settings", label: "Settings" },
+    { icon: "bell", label: "Notifications" },
+    { icon: "clock", label: "Transaction History" },
+    { icon: "help-circle", label: "FAQ" },
+    { icon: "info", label: "About App" },
+    { icon: "log-out", label: "Logout", isLogout: true },
+  ];
+
+  const photoURI = useContext(StackContext);
+    const [photo, setPhoto] = useState(photoURI?.default);
+  
+    useEffect(() => {
+      getPhotoFromContext();
+      console.log(photoURI);
+    });
+  
+    const getPhotoFromContext = async () => {
+      if (photoURI?.saved !== null) {
+        setPhoto(photoURI?.saved);
+      }
+    };
+    const removePhoto = async () => {
+      photoURI.saved = null;
+      setPhoto(photoURI.default);
+    };
+    const goToCamera = () => {
+      navigation.navigate("camera");
+    };
 
   return (
     <SafeAreaView className="flex-1 bg-zinc-50">
       <StatusBar style="dark" />
-      
-      {/* Header */}
-      <View className="flex-row items-center p-4 border-b border-zinc-200">
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()}
-          className="p-2"
-        >
-          <ArrowLeft size={24} color="#27272a" />
-        </TouchableOpacity>
-        <Text className="text-xl font-semibold text-zinc-900 ml-4">My Profile</Text>
-      </View>
 
-      <ScrollView className="flex-1 p-6">
-        {/* Profile Picture */}
-        <View className="items-center mb-8">
-          <Image
-            source={require("../../assets/images/profile_pic.png")}
-            className="w-24 h-24 rounded-full"
-          />
-        </View>
-
-        {/* Basic Detail Section */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-zinc-900 mb-4">Basic Detail</Text>
-          
-          {/* Full Name */}
-          <View className="mb-6">
-            <Text className="text-sm text-zinc-500 mb-2">Full name</Text>
-            <TextInput
-              value={fullName}
-              onChangeText={setFullName}
-              className="text-base py-2 border-b border-zinc-200 text-zinc-900"
-            />
-          </View>
-
-          {/* Date of Birth */}
-          <View className="mb-6">
-            <Text className="text-sm text-zinc-500 mb-2">Date of birth</Text>
-            <TouchableOpacity 
-              onPress={() => setShowDatePicker(true)}
-              className="flex-row items-center justify-between py-2 border-b border-zinc-200"
-            >
-              <Text className="text-base text-zinc-900">
-                {dateOfBirth.toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
-                })}
-              </Text>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={dateOfBirth}
-                mode="date"
-                display="default"
-                onChange={onDateChange}
+      <View className="flex-1">
+        {/* Profile Info */}
+        <View className="p-6 border-b border-zinc-200">
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={goToCamera}>
+              <Image
+                source={require("../../assets/images/profile_pic.png")}
+                className="w-16 h-16 resize-contain rounded-full"
               />
-            )}
-          </View>
-
-          {/* Gender */}
-          <View>
-            <Text className="text-sm text-zinc-500 mb-2">Gender</Text>
-            <View className="flex-row space-x-8">
-              <TouchableOpacity 
-                onPress={() => setGender('male')}
-                className="flex-row items-center"
-              >
-                <View className={`w-5 h-5 rounded-full border-2 ${
-                  gender === 'male' ? 'border-blue-500' : 'border-zinc-300'
-                } items-center justify-center`}>
-                  {gender === 'male' && (
-                    <View className="w-3 h-3 rounded-full bg-blue-500" />
-                  )}
-                </View>
-                <Text className="text-base text-zinc-900 ml-2">Male</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                onPress={() => setGender('female')}
-                className="flex-row items-center"
-              >
-                <View className={`w-5 h-5 rounded-full border-2 ${
-                  gender === 'female' ? 'border-blue-500' : 'border-zinc-300'
-                } items-center justify-center`}>
-                  {gender === 'female' && (
-                    <View className="w-3 h-3 rounded-full bg-blue-500" />
-                  )}
-                </View>
-                <Text className="text-base text-zinc-900 ml-2">Female</Text>
-              </TouchableOpacity>
+            </TouchableOpacity>
+            <View className="ml-4">
+              <Text className="text-lg font-semibold text-zinc-900">
+                Ameer Hamza
+              </Text>
+              <Text className="text-zinc-500">ameerhamza@gmail.com</Text>
             </View>
           </View>
         </View>
 
-        {/* Contact Detail Section */}
-        <View className="mb-8">
-          <Text className="text-lg font-semibold text-zinc-900 mb-4">Contact Detail</Text>
-          
-          {/* Mobile Number */}
-          <View>
-            <Text className="text-sm text-zinc-500 mb-2">Mobile number</Text>
-            <TextInput
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
-              keyboardType="phone-pad"
-              className="text-base py-2 border-b border-zinc-200 text-zinc-900"
-              placeholder="Enter your mobile number"
-              placeholderTextColor="#a1a1aa"
-            />
-          </View>
+        {/* Menu Items */}
+        <View className="p-4">
+          {menuItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              className={`flex-row items-center py-4 px-2 ${
+                index !== menuItems.length - 1
+                  ? "border-b-4 border-zinc-100"
+                  : "mt-24"
+              }`}
+            >
+              <View className="w-8 h-8 items-center justify-center">
+                {/* Render icons dynamically */}
+                <Feather
+                  name={item.icon}
+                  size={24}
+                  color={item.isLogout ? "#ef4444" : "#71717a"}
+                />
+              </View>
+              <Text
+                className={`text-base ml-3 ${
+                  item.isLogout ? "text-red-500" : "text-zinc-900"
+                }`}
+              >
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-
-        {/* Save Button */}
-        <TouchableOpacity className="w-full bg-blue-500 py-4 rounded-xl items-center">
-          <Text className="text-white font-semibold text-lg">Save</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
