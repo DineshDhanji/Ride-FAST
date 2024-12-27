@@ -2,8 +2,11 @@ import { View, Text, Image, useColorScheme } from "react-native";
 import { Divider } from "react-native-paper";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { colors } from "@/assets/palette/colors";
-export default function SearchItem() {
+
+export default function SearchItem({ ride }) {
   const colorScheme = useColorScheme();
+  console.log(ride);
+  const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
 
   return (
     <View className="h-max w-full bg-zinc-100 dark:bg-zinc-800 active:bg-zinc-200 dark:active:bg-zinc-900 border border-zinc-400 rounded-xl px-5 py-5 mb-4">
@@ -12,7 +15,7 @@ export default function SearchItem() {
           className="size-16 rounded-full me-3"
           resizeMode="cover"
           source={{
-            uri: "https://i.pinimg.com/originals/56/31/22/56312264db7ff9c2cf7b11a6eccb4633.jpg",
+            uri: `${BASE_URL}/${ride.rider.profile_picture}`,
           }}
         />
         <View className="flex flex-col justify-center flex-1">
@@ -20,13 +23,14 @@ export default function SearchItem() {
             className="text-zinc-950 dark:text-zinc-50 text-lg mb-1"
             numberOfLines={1}
           >
-            Shinchan Nohara
+            {ride.rider.first_name} {ride.rider.last_name}
           </Text>
           <Text
             className="text-zinc-600 dark:text-zinc-400 text-md mb-1"
             numberOfLines={1}
           >
-            77 trips
+            {ride.rider.completed_trips}{" "}
+            {ride.rider.completed_trips > 1 ? "trips" : "trip"}
           </Text>
         </View>
       </View>
@@ -42,7 +46,7 @@ export default function SearchItem() {
             className="text-zinc-900 dark:text-zinc-100 text-md flex-1"
             numberOfLines={1}
           >
-            A
+            {ride.points_list.source.name}
           </Text>
         </View>
         <View className="flex flex-row items-center px-3 mt-1">
@@ -56,7 +60,21 @@ export default function SearchItem() {
             className="text-zinc-900 dark:text-zinc-100 text-md flex-1"
             numberOfLines={1}
           >
-            B
+            {ride.points_list.destination.name}
+          </Text>
+        </View>
+        <View className="flex flex-row items-center px-3 mt-1">
+          <MaterialIcons
+            className="size-7 flex justify-center items-center"
+            name="directions-car"
+            size={22}
+            color={colorScheme === "dark" ? colors.zinc[50] : colors.zinc[950]}
+          />
+          <Text
+            className="text-zinc-900 dark:text-zinc-100 text-md flex-1"
+            numberOfLines={1}
+          >
+            {ride.car_model}
           </Text>
         </View>
       </View>
@@ -80,14 +98,16 @@ export default function SearchItem() {
               }
             />
           </View>
-          <Text className="text-zinc-900 dark:text-zinc-100 text-lg">01</Text>
+          <Text className="text-zinc-900 dark:text-zinc-100 text-lg">
+            {ride.available_seats}
+          </Text>
         </View>
         <View className="flex flex-row items-center">
           <Text
             className="text-zinc-900 dark:text-zinc-100 text-3xl text-right font-semibold w-36"
             numberOfLines={1}
           >
-            Rs. 460
+            Rs. {ride.price}
           </Text>
         </View>
       </View>

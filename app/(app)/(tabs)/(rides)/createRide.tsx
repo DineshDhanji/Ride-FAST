@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   ScrollView,
-  FlatList,
   Image,
   Pressable,
   useColorScheme,
@@ -15,6 +14,7 @@ import {
   Divider,
   Checkbox,
 } from "react-native-paper";
+import { useNavigation } from "expo-router";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import * as Location from "expo-location";
@@ -24,12 +24,15 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { colors } from "@/assets/palette/colors";
 import axios from "axios";
 import { useSession } from "@/session/ctx";
+import { useRide } from "@/context/ride";
 
 const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY; // Replace with your Google API Key
 
 export default function CreateRide() {
   const colorScheme = useColorScheme();
   const { session } = useSession();
+  const navigation = useNavigation();
+  const { ride, setRide } = useRide();
 
   // Form variables
   const [carModel, setCarModel] = useState("");
@@ -261,186 +264,268 @@ export default function CreateRide() {
         }
       })
       .finally(() => {
-        setSubmitDisabled(false);
+        const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
+        if (!BASE_URL) {
+          console.error("Base API URL is not defined");
+          return;
+        }
+        const apiURL = `${BASE_URL}/api/get_ride`;
+        axios
+          .get(apiURL, {
+            headers: {
+              Authorization: `Bearer ${session}`,
+            },
+          })
+          .then((response) => {
+            setRide(response.data.data);
+            console.log("Ride ", ride);
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+            setSubmitDisabled(false);
+            navigation.goBack();
+          });
       });
   };
-
-  if (errorMsg) {
+  if (ride !== null) {
     return (
       <View className="flex-1 bg-zinc-200 dark:bg-zinc-800 p-4">
-        <Text className="text-zinc-800 dark:text-zinc-200 text-2xl">
-          Location Error
+        <Text className="text-zinc-950 dark:text-zinc-50 text-2xl mb-2">
+          Ride Found!
         </Text>
         <Text className="text-zinc-950 dark:text-zinc-50 text-lg">
-          {errorMsg}
+          You already have a ride created. Kindly delete the existing ride to
+          create a new one.
         </Text>
-        <Button
-          onPress={getCurrentLocation}
-          title={"Grant Permission"}
-        ></Button>
+        <Pressable
+          onPress={() => {
+            navigation.navigate("(home)"); // Navigate to 'Home' screen
+          }}
+          style={{ marginTop: 8 }}
+        >
+          <Text className="text-zinc-950 dark:text-zinc-50 text-lg underline">
+            Go to Home
+          </Text>
+        </Pressable>
       </View>
     );
   } else {
-    return (
-      <ScrollView
-        scrollEnabled={isParentScrollEnabled}
-        className="flex-1 bg-zinc-200 dark:bg-zinc-800 p-4"
-      >
-        <AlertBox ref={alertBoxRef} />
-
-        {/* Map View */}
-        <View className="w-full aspect-square border border-zinc-700 dark:border-zinc-400 rounded-lg overflow-hidden">
-          {errorMsg === null && (
-            <MapView
-              // provider={PROVIDER_GOOGLE}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-              provider={PROVIDER_GOOGLE}
-              initialRegion={initialRegion}
-              showsUserLocation={true}
-              showsCompass={true}
-              zoomEnabled={true}
-              showsMyLocationButton={true}
-              userInterfaceStyle={colorScheme}
-              zoomControlEnabled={true}
-              onPoiClick={(e) => {
-                console.log("POI Clicked ", e.nativeEvent);
-              }}
-            >
-              <Marker
-                title="A"
-                pinColor="red"
-                coordinate={{
-                  latitude: 24.86549307525781,
-                  longitude: 67.02338604256511,
-                  latitudeDelta: 0.016886786149022726,
-                  longitudeDelta: 0.01476924866437912,
-                }}
-                // key={1}
-                description="A"
-              />
-              {source !== null && (
-                <Marker
-                  coordinate={{
-                    latitude: source.location.lat,
-                    longitude: source.location.lng,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                  title="Source"
-                  pinColor="black"
-                  description={source.name}
-                />
-              )}
-
-              {destination !== null && (
-                <Marker
-                  coordinate={{
-                    latitude: destination.location.lat,
-                    longitude: destination.location.lng,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                  pinColor="red"
-                  title="Destination"
-                  description={destination.name}
-                />
-              )}
-              {source !== null && destination !== null && (
-                <MapViewDirections
-                  origin={{
-                    latitude: source.location["lat"],
-                    longitude: source.location["lng"],
-                  }}
-                  destination={{
-                    latitude: destination.location["lat"],
-                    longitude: destination.location["lng"],
-                  }}
-                  // origin={{ latitude: 24.8555485, longitude: 67.0103228 }}
-                  // destination={{ latitude: 24.8568991, longitude: 67.2646838 }}
-                  apikey={GOOGLE_API_KEY}
-                  strokeColor={colors.zinc[900]}
-                  strokeWidth={4}
-                />
-              )}
-            </MapView>
-          )}
+    if (errorMsg) {
+      return (
+        <View className="flex-1 bg-zinc-200 dark:bg-zinc-800 p-4">
+          <Text className="text-zinc-800 dark:text-zinc-200 text-2xl">
+            Location Error
+          </Text>
+          <Text className="text-zinc-950 dark:text-zinc-50 text-lg">
+            {errorMsg}
+          </Text>
+          <Button
+            onPress={getCurrentLocation}
+            title={"Grant Permission"}
+          ></Button>
         </View>
+      );
+    } else {
+      return (
+        <ScrollView
+          scrollEnabled={isParentScrollEnabled}
+          className="flex-1 bg-zinc-200 dark:bg-zinc-800 p-4"
+        >
+          <AlertBox ref={alertBoxRef} />
 
-        {/* Searchbar */}
-        <View className="h-max mb-4">
-          <Searchbar
-            placeholder="Search your location"
-            mode="view"
-            onChangeText={setSearchQuery}
-            // onFocus={() => setExpanded(true)}
-            onEndEditing={searchLocationHandler}
-            value={searchQuery}
-            style={{
-              position: "relative",
-              marginVertical: 10,
-              backgroundColor:
-                colorScheme === "dark" ? colors.zinc[900] : colors.zinc[300],
-            }}
-            inputStyle={{
-              color:
-                colorScheme === "dark" ? colors.zinc[300] : colors.zinc[700],
-            }}
-          />
-          {expanded && (
-            <View className="w-full min-h-0 max-h-60 bg-zinc-300 dark:bg-zinc-900 border-t border-zinc-700 dark:border-zinc-400 absolute top-20 py-2 z-10">
-              {searchingBool && (
-                <ActivityIndicator
-                  animating={searchingBool}
-                  hidesWhenStopped={true}
+          {/* Map View */}
+          <View className="w-full aspect-square border border-zinc-700 dark:border-zinc-400 rounded-lg overflow-hidden">
+            {errorMsg === null && (
+              <MapView
+                // provider={PROVIDER_GOOGLE}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                provider={PROVIDER_GOOGLE}
+                initialRegion={initialRegion}
+                showsUserLocation={true}
+                showsCompass={true}
+                zoomEnabled={true}
+                showsMyLocationButton={true}
+                userInterfaceStyle={colorScheme}
+                zoomControlEnabled={true}
+                onPoiClick={(e) => {
+                  console.log("POI Clicked ", e.nativeEvent);
+                }}
+              >
+                <Marker
+                  title="A"
+                  pinColor="red"
+                  coordinate={{
+                    latitude: 24.86549307525781,
+                    longitude: 67.02338604256511,
+                    latitudeDelta: 0.016886786149022726,
+                    longitudeDelta: 0.01476924866437912,
+                  }}
+                  // key={1}
+                  description="A"
+                />
+                {source !== null && (
+                  <Marker
+                    coordinate={{
+                      latitude: source.location.lat,
+                      longitude: source.location.lng,
+                      latitudeDelta: 0.0922,
+                      longitudeDelta: 0.0421,
+                    }}
+                    title="Source"
+                    pinColor="black"
+                    description={source.name}
+                  />
+                )}
+
+                {destination !== null && (
+                  <Marker
+                    coordinate={{
+                      latitude: destination.location.lat,
+                      longitude: destination.location.lng,
+                      latitudeDelta: 0.0922,
+                      longitudeDelta: 0.0421,
+                    }}
+                    pinColor="red"
+                    title="Destination"
+                    description={destination.name}
+                  />
+                )}
+                {source !== null && destination !== null && (
+                  <MapViewDirections
+                    origin={{
+                      latitude: source.location["lat"],
+                      longitude: source.location["lng"],
+                    }}
+                    destination={{
+                      latitude: destination.location["lat"],
+                      longitude: destination.location["lng"],
+                    }}
+                    // origin={{ latitude: 24.8555485, longitude: 67.0103228 }}
+                    // destination={{ latitude: 24.8568991, longitude: 67.2646838 }}
+                    apikey={GOOGLE_API_KEY}
+                    strokeColor={colors.zinc[900]}
+                    strokeWidth={4}
+                  />
+                )}
+              </MapView>
+            )}
+          </View>
+
+          {/* Searchbar */}
+          <View className="h-max mb-4">
+            <Searchbar
+              placeholder="Search your location"
+              mode="view"
+              onChangeText={setSearchQuery}
+              // onFocus={() => setExpanded(true)}
+              onEndEditing={searchLocationHandler}
+              value={searchQuery}
+              style={{
+                position: "relative",
+                marginVertical: 10,
+                backgroundColor:
+                  colorScheme === "dark" ? colors.zinc[900] : colors.zinc[300],
+              }}
+              inputStyle={{
+                color:
+                  colorScheme === "dark" ? colors.zinc[300] : colors.zinc[700],
+              }}
+            />
+            {expanded && (
+              <View className="w-full min-h-0 max-h-60 bg-zinc-300 dark:bg-zinc-900 border-t border-zinc-700 dark:border-zinc-400 absolute top-20 py-2 z-10">
+                {searchingBool && (
+                  <ActivityIndicator
+                    animating={searchingBool}
+                    hidesWhenStopped={true}
+                    color={
+                      colorScheme === "dark"
+                        ? colors.zinc[50]
+                        : colors.zinc[900]
+                    }
+                  />
+                )}
+                <ScrollView
+                  nestedScrollEnabled={true} // Ensure nested scrolling works
+                  onTouchStart={() => setIsParentScrollEnabled(false)} // Disable parent scrolling
+                  onTouchEnd={() => setIsParentScrollEnabled(true)} // Enable parent scrolling
+                  onMomentumScrollEnd={() => setIsParentScrollEnabled(true)} // Re-enable parent scrolling after
+                  className="w-full h-full"
+                >
+                  {places.map((place) => (
+                    <Pressable
+                      key={place.place_id}
+                      className="min-h-12 max-h-max flex flex-row items-center my-1 p-2 bg-zinc-200 active:bg-zinc-300 dark:bg-zinc-800 dark:active:bg-zinc-700"
+                      onPress={() => handlePlaceSelect(place)}
+                    >
+                      <View className="m-3">
+                        <Image
+                          className="size-8"
+                          source={{ uri: place.icon }}
+                          resizeMode="contain"
+                        ></Image>
+                      </View>
+                      <Text className="text-zinc-950 dark:text-zinc-50">
+                        {place.name}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </View>
+
+          {/* Source/Destination Toggle */}
+          <View className="flex flex-row justify-evenly mb-4">
+            <Pressable
+              onPress={() => setSelectedLocation("source")}
+              className={`border rounded-xl w-5/12 p-3 ${
+                selectedLocation === "source"
+                  ? "bg-zinc-100 border-zinc-900 dark:bg-zinc-900 dark:border-zinc-100 "
+                  : "bg-zinc-300 border-zinc-700 dark:bg-zinc-700 dark:border-zinc-300"
+              }`}
+            >
+              <View className="flex flex-row items-center justify-start">
+                <MaterialIcons
+                  className="size-7 me-2 my-1"
+                  name="location-pin"
+                  size={25}
                   color={
-                    colorScheme === "dark" ? colors.zinc[50] : colors.zinc[900]
+                    colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]
                   }
                 />
-              )}
-              <ScrollView
-                nestedScrollEnabled={true} // Ensure nested scrolling works
-                onTouchStart={() => setIsParentScrollEnabled(false)} // Disable parent scrolling
-                onTouchEnd={() => setIsParentScrollEnabled(true)} // Enable parent scrolling
-                onMomentumScrollEnd={() => setIsParentScrollEnabled(true)} // Re-enable parent scrolling after
-                className="w-full h-full"
-              >
-                {places.map((place) => (
-                  <Pressable
-                    key={place.place_id}
-                    className="min-h-12 max-h-max flex flex-row items-center my-1 p-2 bg-zinc-200 active:bg-zinc-300 dark:bg-zinc-800 dark:active:bg-zinc-700"
-                    onPress={() => handlePlaceSelect(place)}
-                  >
-                    <View className="m-3">
-                      <Image
-                        className="size-8"
-                        source={{ uri: place.icon }}
-                        resizeMode="contain"
-                      ></Image>
-                    </View>
-                    <Text className="text-zinc-950 dark:text-zinc-50">
-                      {place.name}
-                    </Text>
-                  </Pressable>
-                ))}
-              </ScrollView>
-            </View>
-          )}
-        </View>
-
-        {/* Source/Destination Toggle */}
-        <View className="flex flex-row justify-evenly mb-4">
-          <Pressable
-            onPress={() => setSelectedLocation("source")}
-            className={`border rounded-xl w-5/12 p-3 ${
-              selectedLocation === "source"
-                ? "bg-zinc-100 border-zinc-900 dark:bg-zinc-900 dark:border-zinc-100 "
-                : "bg-zinc-300 border-zinc-700 dark:bg-zinc-700 dark:border-zinc-300"
-            }`}
-          >
-            <View className="flex flex-row items-center justify-start">
+                <Text className="text-base text-zinc-900 dark:text-zinc-50">
+                  Source
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => setSelectedLocation("destination")}
+              className={`border rounded-xl w-5/12 p-3 ${
+                selectedLocation === "destination"
+                  ? "bg-zinc-100 border-zinc-900 dark:bg-zinc-900 dark:border-zinc-100"
+                  : "bg-zinc-300 border-zinc-700 dark:bg-zinc-700 dark:border-zinc-300"
+              }`}
+            >
+              <View className="flex flex-row items-center justify-start">
+                <MaterialIcons
+                  className="size-7 me-2 my-1"
+                  name="location-pin"
+                  size={25}
+                  color={colorScheme === "dark" ? "#7f1d1d" : "#dc2626"}
+                />
+                <Text className="text-base text-zinc-900 dark:text-zinc-50">
+                  Destination
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+          <View className="h-max">
+            <View className="flex flex-row items-center p-2">
               <MaterialIcons
                 className="size-7 me-2 my-1"
                 name="location-pin"
@@ -449,188 +534,159 @@ export default function CreateRide() {
                   colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]
                 }
               />
-              <Text className="text-base text-zinc-900 dark:text-zinc-50">
-                Source
+              <Text className="text-zinc-950 dark:text-zinc-50 text-base font-normal h-max flex-1">
+                {source !== null ? source.name : "-"}
               </Text>
             </View>
-          </Pressable>
-          <Pressable
-            onPress={() => setSelectedLocation("destination")}
-            className={`border rounded-xl w-5/12 p-3 ${
-              selectedLocation === "destination"
-                ? "bg-zinc-100 border-zinc-900 dark:bg-zinc-900 dark:border-zinc-100"
-                : "bg-zinc-300 border-zinc-700 dark:bg-zinc-700 dark:border-zinc-300"
-            }`}
-          >
-            <View className="flex flex-row items-center justify-start">
+            <View className="flex flex-row items-center p-2">
               <MaterialIcons
                 className="size-7 me-2 my-1"
                 name="location-pin"
                 size={25}
                 color={colorScheme === "dark" ? "#7f1d1d" : "#dc2626"}
               />
-              <Text className="text-base text-zinc-900 dark:text-zinc-50">
-                Destination
+              <Text className="text-zinc-950 dark:text-zinc-50 text-base font-normal h-max flex-1">
+                {destination !== null ? destination.name : "-"}
               </Text>
             </View>
-          </Pressable>
-        </View>
-        <View className="h-max">
-          <View className="flex flex-row items-center p-2">
-            <MaterialIcons
-              className="size-7 me-2 my-1"
-              name="location-pin"
-              size={25}
+          </View>
+
+          <Divider
+            bold={true}
+            style={{
+              backgroundColor:
+                colorScheme === "dark" ? colors.zinc[50] : colors.zinc[400],
+              marginTop: 5,
+              marginBottom: 15,
+            }}
+          />
+
+          {/* Car Model */}
+          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
+            Car Model
+          </Text>
+          <TextInput
+            ref={carModelRef} // Reference for Car Model
+            className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
+            placeholder="Enter car model"
+            value={carModel}
+            onChangeText={setCarModel}
+            onSubmitEditing={() => carColorRef.current.focus()} // Focus next field
+            returnKeyType="next"
+          />
+
+          {/* Car Color */}
+          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
+            Car Color
+          </Text>
+          <TextInput
+            ref={carColorRef} // Reference for Car Color
+            className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
+            placeholder="Enter car color"
+            value={carColor}
+            onChangeText={setCarColor}
+            onSubmitEditing={() => carNumberPlateRef.current.focus()} // Focus next field
+            returnKeyType="next"
+          />
+
+          {/* Car Number Plate */}
+          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
+            Car Number Plate
+          </Text>
+          <TextInput
+            ref={carNumberPlateRef} // Reference for Car Number Plate
+            className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
+            placeholder="Enter car number plate"
+            value={carNumberPlate}
+            onChangeText={setCarNumberPlate}
+            onSubmitEditing={() => availableSeatsRef.current.focus()} // Focus next field
+            returnKeyType="next"
+          />
+
+          {/* Available Seats */}
+          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
+            Available Seats
+          </Text>
+          <TextInput
+            ref={availableSeatsRef} // Reference for Available Seats
+            className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
+            placeholder="Enter number of available seats"
+            value={availableSeats}
+            onChangeText={setAvailableSeats}
+            onSubmitEditing={() => priceRef.current.focus()} // Focus next field
+            keyboardType="numeric"
+            returnKeyType="next"
+          />
+
+          {/* Price */}
+          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
+            Price per seat
+          </Text>
+          <TextInput
+            ref={priceRef} // Reference for Price
+            className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
+            placeholder="Enter price per seat"
+            value={price}
+            onChangeText={setPrice}
+            keyboardType="numeric"
+          />
+
+          {/* Smoking */}
+          <View className="flex-row items-center mb-2">
+            <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mr-2">
+              Smoking Allowed
+            </Text>
+            <Checkbox
+              status={smoking ? "checked" : "unchecked"}
+              onPress={() => {
+                setSmoking(!smoking);
+              }}
               color={
                 colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]
               }
             />
-            <Text className="text-zinc-950 dark:text-zinc-50 text-base font-normal h-max flex-1">
-              {source !== null ? source.name : "-"}
-            </Text>
           </View>
-          <View className="flex flex-row items-center p-2">
-            <MaterialIcons
-              className="size-7 me-2 my-1"
-              name="location-pin"
-              size={25}
-              color={colorScheme === "dark" ? "#7f1d1d" : "#dc2626"}
+          {/* AC Available */}
+          <View className="flex-row items-center mb-2">
+            <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mr-2">
+              AC Available
+            </Text>
+            <Checkbox
+              status={ac ? "checked" : "unchecked"}
+              onPress={() => {
+                setAc(!ac);
+              }}
+              color={
+                colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]
+              }
             />
-            <Text className="text-zinc-950 dark:text-zinc-50 text-base font-normal h-max flex-1">
-              {destination !== null ? destination.name : "-"}
-            </Text>
           </View>
-        </View>
+          {/* Music Available */}
+          <View className="flex-row items-center mb-2">
+            <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mr-2">
+              Music Available
+            </Text>
+            <Checkbox
+              status={music ? "checked" : "unchecked"}
+              onPress={() => {
+                setMusic(!music);
+              }}
+              color={
+                colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]
+              }
+            />
+          </View>
 
-        <Divider
-          bold={true}
-          style={{
-            backgroundColor:
-              colorScheme === "dark" ? colors.zinc[50] : colors.zinc[400],
-            marginTop: 5,
-            marginBottom: 15,
-          }}
-        />
-
-        {/* Car Model */}
-        <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
-          Car Model
-        </Text>
-        <TextInput
-          ref={carModelRef} // Reference for Car Model
-          className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
-          placeholder="Enter car model"
-          value={carModel}
-          onChangeText={setCarModel}
-          onSubmitEditing={() => carColorRef.current.focus()} // Focus next field
-          returnKeyType="next"
-        />
-
-        {/* Car Color */}
-        <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
-          Car Color
-        </Text>
-        <TextInput
-          ref={carColorRef} // Reference for Car Color
-          className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
-          placeholder="Enter car color"
-          value={carColor}
-          onChangeText={setCarColor}
-          onSubmitEditing={() => carNumberPlateRef.current.focus()} // Focus next field
-          returnKeyType="next"
-        />
-
-        {/* Car Number Plate */}
-        <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
-          Car Number Plate
-        </Text>
-        <TextInput
-          ref={carNumberPlateRef} // Reference for Car Number Plate
-          className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
-          placeholder="Enter car number plate"
-          value={carNumberPlate}
-          onChangeText={setCarNumberPlate}
-          onSubmitEditing={() => availableSeatsRef.current.focus()} // Focus next field
-          returnKeyType="next"
-        />
-
-        {/* Available Seats */}
-        <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
-          Available Seats
-        </Text>
-        <TextInput
-          ref={availableSeatsRef} // Reference for Available Seats
-          className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
-          placeholder="Enter number of available seats"
-          value={availableSeats}
-          onChangeText={setAvailableSeats}
-          onSubmitEditing={() => priceRef.current.focus()} // Focus next field
-          keyboardType="numeric"
-          returnKeyType="next"
-        />
-
-        {/* Price */}
-        <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mb-1">
-          Price per seat
-        </Text>
-        <TextInput
-          ref={priceRef} // Reference for Price
-          className="w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-400 border-b-2 border-zinc-400 dark:border-zinc-600 dark:text-zinc-50 text-zinc-950 bg-zinc-100 dark:bg-zinc-700 p-2 mb-4 text-base h-12"
-          placeholder="Enter price per seat"
-          value={price}
-          onChangeText={setPrice}
-          keyboardType="numeric"
-        />
-
-        {/* Smoking */}
-        <View className="flex-row items-center mb-2">
-          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mr-2">
-            Smoking Allowed
-          </Text>
-          <Checkbox
-            status={smoking ? "checked" : "unchecked"}
-            onPress={() => {
-              setSmoking(!smoking);
-            }}
-            color={colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]}
-          />
-        </View>
-        {/* AC Available */}
-        <View className="flex-row items-center mb-2">
-          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mr-2">
-            AC Available
-          </Text>
-          <Checkbox
-            status={ac ? "checked" : "unchecked"}
-            onPress={() => {
-              setAc(!ac);
-            }}
-            color={colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]}
-          />
-        </View>
-        {/* Music Available */}
-        <View className="flex-row items-center mb-2">
-          <Text className="text-lg font-semibold text-zinc-950 dark:text-zinc-50 mr-2">
-            Music Available
-          </Text>
-          <Checkbox
-            status={music ? "checked" : "unchecked"}
-            onPress={() => {
-              setMusic(!music);
-            }}
-            color={colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]}
-          />
-        </View>
-
-        {/* Submit Button */}
-        <View className="mb-10">
-          <Button
-            title="Create Ride"
-            disabled={submitDisabled}
-            onPress={submitRideRequestHandler}
-          />
-        </View>
-      </ScrollView>
-    );
+          {/* Submit Button */}
+          <View className="mb-10">
+            <Button
+              title="Create Ride"
+              disabled={submitDisabled}
+              onPress={submitRideRequestHandler}
+            />
+          </View>
+        </ScrollView>
+      );
+    }
   }
 }

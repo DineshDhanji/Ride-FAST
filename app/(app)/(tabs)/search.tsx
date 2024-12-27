@@ -42,9 +42,9 @@ export default function Search() {
             </Text>
           </View>
           <ScrollView className="flex-1">
+            {/* <SearchItem />
             <SearchItem />
-            <SearchItem />
-            <SearchItem />
+            <SearchItem /> */}
           </ScrollView>
         </View>
       </View>
