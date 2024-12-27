@@ -5,7 +5,6 @@ import { colors } from "@/assets/palette/colors";
 
 export default function SearchItem({ ride }) {
   const colorScheme = useColorScheme();
-  console.log(ride);
   const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
 
   return (
