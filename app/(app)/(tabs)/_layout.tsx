@@ -1,12 +1,27 @@
-import { Tabs } from "expo-router";
+import { Tabs, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { colors } from "@/assets/palette/colors";
 import Ionicon from "@expo/vector-icons/Ionicons";
 import { RideProvider } from "@/context/ride";
+import { Text } from "react-native";
+import { IconButton } from "react-native-paper";
 
 export default function AppLayout() {
   const colorScheme = useColorScheme();
+  const navigation = useNavigation();
+
+  const goBackComponent = () => {
+    return (
+      <IconButton
+        icon="arrow-left"
+        iconColor={colorScheme === "dark" ? colors.zinc[100] : colors.zinc[900]}
+        size={25}
+        // onPress={() => navigation.navigate("search")}
+        onPress={() => navigation.navigate("(tabs)", { screen: "search" })}
+      />
+    );
+  };
 
   return (
     <>
@@ -92,6 +107,14 @@ export default function AppLayout() {
           <Tabs.Screen
             name="profile"
             options={{ title: "Profile", tabBarAccessibilityLabel: "Profile" }}
+          />
+          <Tabs.Screen
+            name="viewRide"
+            options={{
+              href: null,
+              title: "Ride Details",
+              headerLeft: () => goBackComponent(),
+            }}
           />
         </Tabs>
       </RideProvider>

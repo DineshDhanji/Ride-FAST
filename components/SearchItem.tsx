@@ -1,14 +1,18 @@
-import { View, Text, Image, useColorScheme } from "react-native";
+import { View, Text, Image, Pressable, useColorScheme } from "react-native";
 import { Divider } from "react-native-paper";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { colors } from "@/assets/palette/colors";
-
-export default function SearchItem({ ride }) {
+import { useNavigation } from "expo-router";
+export default function SearchItem({ ride, link = true }) {
   const colorScheme = useColorScheme();
   const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
+  const navigation = useNavigation();
 
   return (
-    <View className="h-max w-full bg-zinc-100 dark:bg-zinc-800 active:bg-zinc-200 dark:active:bg-zinc-900 border border-zinc-400 rounded-xl px-5 py-5 mb-4">
+    <Pressable
+      onPress={link ? () => navigation.navigate("viewRide", { ride }) : null}
+      className="h-max w-full bg-zinc-100 dark:bg-zinc-800 active:bg-zinc-200 dark:active:bg-zinc-900 border border-zinc-400 rounded-xl px-5 py-5 mb-4"
+    >
       <View className="flex flex-row mb-2">
         <Image
           className="size-16 rounded-full me-3"
@@ -110,6 +114,6 @@ export default function SearchItem({ ride }) {
           </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }

@@ -81,7 +81,7 @@ export default function Rides() {
         </Text>
         {ride !== null ? (
           <View className="h-max">
-            <SearchItem ride={ride} />
+            <SearchItem ride={ride} link={false} />
             <Button
               disabled={buttonDisable}
               onPress={showDialog}
