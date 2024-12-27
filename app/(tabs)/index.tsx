@@ -1,101 +1,96 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
-import Feather from "@expo/vector-icons/Feather"; // Import Feather once
-import { StackContext } from "@/app/(tabs)/_layout";
-import { useEffect, useState, useRef, useContext } from "react";
+import FileText from "@expo/vector-icons/Feather";
+import Share2 from "@expo/vector-icons/Feather";
+import {
+  getIndieNotificationInbox,
+  deleteIndieNotificationInbox,
+} from "native-notify";
 
 
-export default function ProfileScreen() {
+export default function IndieNotificationsInbox() {
   const navigation = useNavigation();
+  let takeNumber = 10;
+  let skipNumber = 0;
 
-  // Menu items with icon names
-  const menuItems = [
-    { icon: "user", label: "My Profile" },
-    { icon: "settings", label: "Settings" },
-    { icon: "bell", label: "Notifications" },
-    { icon: "clock", label: "Transaction History" },
-    { icon: "help-circle", label: "FAQ" },
-    { icon: "info", label: "About App" },
-    { icon: "log-out", label: "Logout", isLogout: true },
-  ];
-
-  const photoURI = useContext(StackContext);
-    const [photo, setPhoto] = useState(photoURI?.default);
-  
-    useEffect(() => {
-      getPhotoFromContext();
-      console.log(photoURI);
-    });
-  
-    const getPhotoFromContext = async () => {
-      if (photoURI?.saved !== null) {
-        setPhoto(photoURI?.saved);
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const notifications = await getIndieNotificationInbox(
+          "user1",
+          25677,
+          "D83ft1902sTCmXwwESdtvN",
+          takeNumber, // Ensure this variable is defined
+          skipNumber // Ensure this variable is defined
+        );
+        console.log("notifications: ", notifications);
+        setData(notifications);
+      } catch (error) {
+        console.error("Error fetching notifications: ", error);
       }
     };
-    const removePhoto = async () => {
-      photoURI.saved = null;
-      setPhoto(photoURI.default);
-    };
-    const goToCamera = () => {
-      navigation.navigate("camera");
-    };
+
+    fetchNotifications();
+  }, []); // Dependency array remains unchanged
+
+
+const renderNotification = ({ item }) => (
+    <TouchableOpacity
+      className="p-4 border-b border-zinc-100"
+      onPress={() => {
+        // Handle notification press
+        console.log("Notification clicked:", item.notification_id);
+      }}
+    >
+      <View className="space-y-1">
+        <Text className="text-lg font-medium text-zinc-900">{item.title}</Text>
+        <Text className="text-base text-zinc-600">{item.message}</Text>
+        <Text className="text-sm text-zinc-400">{item.date}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+  
+
+
+  const ListEmptyComponent = () => (
+    <View className="flex-1 items-center justify-center p-8">
+      <Text className="text-zinc-500 text-center">No notifications yet</Text>
+    </View>
+  );
+
+//   const ListHeaderComponent = () => (
+//     <View className="flex-row items-center justify-between p-4 border-b border-zinc-200">
+//       <TouchableOpacity className="p-2">
+//         <FileText size={24} color="#27272a" />
+//       </TouchableOpacity>
+//       <Text className="text-xl font-semibold text-zinc-900">Startup Notes</Text>
+//       <TouchableOpacity className="p-2">
+//         <Share2 size={24} color="#27272a" />
+//       </TouchableOpacity>
+//     </View>
+//   );
 
   return (
     <SafeAreaView className="flex-1 bg-zinc-50">
       <StatusBar style="dark" />
 
-      <View className="flex-1">
-        {/* Profile Info */}
-        <View className="p-6 border-b border-zinc-200">
-          <View className="flex-row items-center">
-            <TouchableOpacity onPress={goToCamera}>
-              <Image
-                source={require("../../assets/images/profile_pic.png")}
-                className="w-16 h-16 resize-contain rounded-full"
-              />
-            </TouchableOpacity>
-            <View className="ml-4">
-              <Text className="text-lg font-semibold text-zinc-900">
-                Ameer Hamza
-              </Text>
-              <Text className="text-zinc-500">ameerhamza@gmail.com</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Menu Items */}
-        <View className="p-4">
-          {menuItems.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              className={`flex-row items-center py-4 px-2 ${
-                index !== menuItems.length - 1
-                  ? "border-b-4 border-zinc-100"
-                  : "mt-24"
-              }`}
-            >
-              <View className="w-8 h-8 items-center justify-center">
-                {/* Render icons dynamically */}
-                <Feather
-                  name={item.icon}
-                  size={24}
-                  color={item.isLogout ? "#ef4444" : "#71717a"}
-                />
-              </View>
-              <Text
-                className={`text-base ml-3 ${
-                  item.isLogout ? "text-red-500" : "text-zinc-900"
-                }`}
-              >
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.notification_id}
+        renderItem={renderNotification}
+        ListEmptyComponent={ListEmptyComponent}
+        // ListHeaderComponent={ListHeaderComponent}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
+      />
     </SafeAreaView>
   );
 }

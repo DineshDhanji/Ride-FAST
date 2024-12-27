@@ -48,14 +48,18 @@ export default function RootLayout() {
           {/* <Stack.Screen name="index" options={{headerShown:false,}}/> */}
           {/* <Stack.Screen name="Personal Details" component={SignUpScreen} options={{headerShown:true,}}/> */}
           {/* <Stack.Screen name="index" component={ProfileScreen} options={{headerShown:true, headerTitle: "Profile"}}/> */}
-          <Stack.Screen
+          {/* <Stack.Screen
             name="index"
             options={{ headerShown: true, headerTitle: "Profile Details" }}
-          />
+          /> */}
           <Stack.Screen
+            name="index"
+            options={{ headerShown: true, headerTitle: "Notifications" }}
+          />
+          {/* <Stack.Screen
             name="camera"
             options={{ headerShown: true, headerTitle: "Camera" }}
-          />
+          /> */}
           
           {/* <Stack.Screen name="index" component={LoginScreen} options={{headerShown:false,}}/> */}
           {/* <Stack.Screen name="profile" component={ProfileScreen} options={{headerShown:true, headerTitle: "Profile"}}/>
