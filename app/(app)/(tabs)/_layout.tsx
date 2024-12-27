@@ -44,7 +44,7 @@ export default function AppLayout() {
                 iconName = focused ? "car-sport" : "car-sport-outline";
               } else if (route.name === "(home)") {
                 iconName = focused ? "home" : "home-outline";
-              } else if (route.name === "profile") {
+              } else if (route.name === "(profile)") {
                 iconName = focused ? "person" : "person-outline";
               } else if (route.name === "notifications") {
                 iconName = focused ? "notifications" : "notifications-outline";
@@ -105,8 +105,12 @@ export default function AppLayout() {
             }}
           />
           <Tabs.Screen
-            name="profile"
-            options={{ title: "Profile", tabBarAccessibilityLabel: "Profile" }}
+            name="(profile)"
+            options={{
+              title: "Profile",
+              headerShown: false,
+              tabBarAccessibilityLabel: "Profile",
+            }}
           />
           <Tabs.Screen
             name="viewRide"

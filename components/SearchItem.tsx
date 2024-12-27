@@ -10,7 +10,12 @@ export default function SearchItem({ ride, link = true }) {
 
   return (
     <Pressable
-      onPress={link ? () => navigation.navigate("viewRide", { ride }) : null}
+      onPress={
+        link
+          ? () =>
+              navigation.navigate("viewRide", { ride: JSON.stringify(ride) })
+          : null
+      }
       className="h-max w-full bg-zinc-100 dark:bg-zinc-800 active:bg-zinc-200 dark:active:bg-zinc-900 border border-zinc-400 rounded-xl px-5 py-5 mb-4"
     >
       <View className="flex flex-row mb-2">

@@ -93,28 +93,42 @@ export default function Home() {
                   origin={{
                     latitude: ride.points_list.source.location["lat"],
                     longitude: ride.points_list.source.location["lng"],
+                    latitudeDelta: 0.016886786149022726,
+                    longitudeDelta: 0.01476924866437912,
                   }}
                   destination={{
                     latitude: ride.points_list.destination.location["lat"],
                     longitude: ride.points_list.destination.location["lng"],
+                    latitudeDelta: 0.016886786149022726,
+                    longitudeDelta: 0.01476924866437912,
                   }}
-                  // origin={{ latitude: 24.8555485, longitude: 67.0103228 }}
-                  // destination={{ latitude: 24.8568991, longitude: 67.2646838 }}
                   apikey={GOOGLE_API_KEY}
                   strokeColor={colors.zinc[900]}
                   strokeWidth={4}
                 />
                 <Marker
-                  title="A"
-                  pinColor="red"
+                  title={ride.points_list.source.name}
+                  pinColor="#FFFFFF"
                   coordinate={{
-                    latitude: 24.86549307525781,
-                    longitude: 67.02338604256511,
+                    latitude: ride.points_list.source.location["lat"],
+                    longitude: ride.points_list.source.location["lng"],
                     latitudeDelta: 0.016886786149022726,
                     longitudeDelta: 0.01476924866437912,
                   }}
-                  // key={1}
-                  description="A"
+                  key={1}
+                  description={ride.points_list.source.address}
+                />
+                <Marker
+                  title={ride.points_list.destination.name}
+                  pinColor="#000000"
+                  coordinate={{
+                    latitude: ride.points_list.destination.location["lat"],
+                    longitude: ride.points_list.destination.location["lng"],
+                    latitudeDelta: 0.016886786149022726,
+                    longitudeDelta: 0.01476924866437912,
+                  }}
+                  key={2}
+                  description={ride.points_list.source.address}
                 />
               </>
             )}
