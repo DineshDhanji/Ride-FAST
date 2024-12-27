@@ -36,7 +36,6 @@ export default function RootLayout() {
           />
           <Stack.Screen name="sign-in" options={{ title: "" }} />
         </Stack>
-        {/* <Slot/> */}
       </PaperProvider>
     </SessionProvider>
   );

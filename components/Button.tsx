@@ -18,15 +18,6 @@ export function Button({
       disabled={disabled}
     >
       {title}
-      {/* <Text
-        // numberOfLines={numberOfLines}
-        className="text-zinc-50 dark:text-zinc-950 text-center font-semibold"
-      >
-      </Text> */}
     </RP_Button>
-    // <Pressable
-    //   className="bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600  border rounded-lg py-2 px-3 my-1"
-    // >
-    // </Pressable>
   );
 }
