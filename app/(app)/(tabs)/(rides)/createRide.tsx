@@ -250,6 +250,29 @@ export default function CreateRide() {
             (message = "Ride created successfully."),
             (title = "Success")
           );
+
+          const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
+          if (!BASE_URL) {
+            console.error("Base API URL is not defined");
+            return;
+          }
+          const apiURL = `${BASE_URL}/api/get_ride`;
+          axios
+            .get(apiURL, {
+              headers: {
+                Authorization: `Bearer ${session}`,
+              },
+            })
+            .then((response) => {
+              setRide(response.data.data);
+              console.log("Ride ", ride);
+            })
+            .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => {
+              navigation.goBack();
+            });
         }
       })
       .catch((error) => {
@@ -264,29 +287,7 @@ export default function CreateRide() {
         }
       })
       .finally(() => {
-        const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
-        if (!BASE_URL) {
-          console.error("Base API URL is not defined");
-          return;
-        }
-        const apiURL = `${BASE_URL}/api/get_ride`;
-        axios
-          .get(apiURL, {
-            headers: {
-              Authorization: `Bearer ${session}`,
-            },
-          })
-          .then((response) => {
-            setRide(response.data.data);
-            console.log("Ride ", ride);
-          })
-          .catch((error) => {
-            console.error(error);
-          })
-          .finally(() => {
-            setSubmitDisabled(false);
-            navigation.goBack();
-          });
+        setSubmitDisabled(false);
       });
   };
   if (ride !== null) {

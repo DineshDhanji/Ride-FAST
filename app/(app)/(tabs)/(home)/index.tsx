@@ -1,5 +1,6 @@
 import { View, Text, useColorScheme, ScrollView } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
@@ -7,12 +8,33 @@ import { Button } from "@/components/Button";
 import { useRide } from "@/context/ride";
 import axios from "axios";
 import { useSession } from "@/session/ctx";
+import { colors } from "@/assets/palette/colors";
 
 export default function Home() {
   const colorScheme = useColorScheme();
   const { ride, setRide } = useRide();
   const { session } = useSession();
 
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  async function getCurrentLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+  }
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY;
   const initialRegion = {
     latitude: 24.8607, // Karachi's latitude
     longitude: 67.0011, // Karachi's longitude
@@ -35,7 +57,7 @@ export default function Home() {
       })
       .then((response) => {
         setRide(response.data.data);
-        console.log("Ride ", ride)
+        console.log("Ride ", ride);
       })
       .catch((error) => {
         console.error(error);
@@ -57,6 +79,7 @@ export default function Home() {
               height: "100%",
             }}
             initialRegion={initialRegion}
+            region={undefined}
             showsCompass={true}
             zoomEnabled={true}
             zoomControlEnabled={true}
@@ -64,26 +87,46 @@ export default function Home() {
               console.log("POI Clicked ", e.nativeEvent);
             }}
           >
-            <Marker
-              title="A"
-              pinColor="red"
-              coordinate={{
-                latitude: 24.86549307525781,
-                longitude: 67.02338604256511,
-                latitudeDelta: 0.016886786149022726,
-                longitudeDelta: 0.01476924866437912,
-              }}
-              // key={1}
-              description="A"
-            />
+            {ride !== null && (
+              <>
+                <MapViewDirections
+                  origin={{
+                    latitude: ride.points_list.source.location["lat"],
+                    longitude: ride.points_list.source.location["lng"],
+                  }}
+                  destination={{
+                    latitude: ride.points_list.destination.location["lat"],
+                    longitude: ride.points_list.destination.location["lng"],
+                  }}
+                  // origin={{ latitude: 24.8555485, longitude: 67.0103228 }}
+                  // destination={{ latitude: 24.8568991, longitude: 67.2646838 }}
+                  apikey={GOOGLE_API_KEY}
+                  strokeColor={colors.zinc[900]}
+                  strokeWidth={4}
+                />
+                <Marker
+                  title="A"
+                  pinColor="red"
+                  coordinate={{
+                    latitude: 24.86549307525781,
+                    longitude: 67.02338604256511,
+                    latitudeDelta: 0.016886786149022726,
+                    longitudeDelta: 0.01476924866437912,
+                  }}
+                  // key={1}
+                  description="A"
+                />
+              </>
+            )}
           </MapView>
         </View>
-        <ScrollView className="flex-1 px-5 mt-3">
-          <Text className="text-zinc-950 dark:text-zinc-50 text-2xl font-semibold">
+        <ScrollView className="flex-1 px-5 mt-5">
+          <Text className="text-zinc-950 dark:text-zinc-50 text-3xl font-semibold">
             Your Ride 😊
           </Text>
-          
-          {/* <Button onPress={getLocation} title={"Get Location"} /> */}
+          <Text className="text-lg text-zinc-950 dark:text-zinc-50">
+            You don't have any upcomming ride schedule.
+          </Text>
         </ScrollView>
       </View>
     </SafeAreaView>

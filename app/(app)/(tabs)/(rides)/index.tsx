@@ -96,6 +96,28 @@ export default function Rides() {
           </View>
         )}
       </View>
+
+      <Divider
+        bold={true}
+        style={{
+          backgroundColor:
+            colorScheme === "dark" ? colors.zinc[500] : colors.zinc[400],
+          marginTop: 7,
+        }}
+      />
+
+      <View className="p-4">
+        <Text className="text-zinc-900 dark:text-zinc-100 font-medium text-2xl mb-3 h-max">
+          Requests for your ride
+        </Text>
+        <View>
+          <Text className="text-zinc-700 dark:text-zinc-300 font-medium text-md mb-3">
+            No requests found.
+          </Text>
+        </View>
+      </View>
+
+      <View className="mb-6"></View>
       <Portal>
         <Dialog
           visible={visible}
