@@ -7,13 +7,44 @@ import * as Location from "expo-location";
 import { Button } from "@/components/Button";
 import { useRide } from "@/context/ride";
 import axios from "axios";
+import { registerIndieID, unregisterIndieDevice } from "native-notify";
 import { useSession } from "@/session/ctx";
 import { colors } from "@/assets/palette/colors";
+import registerNNPushToken from "native-notify";
 
 export default function Home() {
+  registerNNPushToken(25677, "D83ft1902sTCmXwwESdtvN");
   const colorScheme = useColorScheme();
   const { ride, setRide } = useRide();
   const { session } = useSession();
+
+  // const { session, signOut } = useSession();
+  const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+  const [isDataFetched, setIsDataFetched] = useState(false); // Track if data is fetched
+    const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
+    if (BASE_URL === undefined) {
+      console.error("Base API URL is not defined");
+      return;
+    }
+    
+    const infoapiURL = BASE_URL + "/api/get_info";
+    
+    useEffect(() => {
+      axios
+      .get(infoapiURL, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data)
+        setData(response.data.data);
+        setShow(true);
+        setIsDataFetched(true);
+      });
+    }, []);
 
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
@@ -42,6 +73,10 @@ export default function Home() {
     longitudeDelta: 0.0921, // Zoom level (adjust as necessary)
   };
 
+  const registeruser = () => {
+    registerIndieID(data.id.toString(), 25677, "D83ft1902sTCmXwwESdtvN");
+  };
+
   const getRide = () => {
     const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
     if (!BASE_URL) {
@@ -67,6 +102,14 @@ export default function Home() {
   useEffect(() => {
     getRide();
   }, []);
+  
+  useEffect(() => {
+    // Run function after data is fetched
+    if (isDataFetched) {
+      console.log("Data is now available:", data);
+      registeruser();
+    }
+  }, [isDataFetched]); // Dependency is isDataFetched
 
   return (
     <SafeAreaView className="flex-1">

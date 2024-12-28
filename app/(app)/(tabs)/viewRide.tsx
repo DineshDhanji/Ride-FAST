@@ -6,9 +6,12 @@ import {
   useColorScheme,
   ScrollView,
 } from "react-native";
+import { useState, useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Octicons from "@expo/vector-icons/Octicons";
+import axios from "axios";
+import { useSession } from "@/session/ctx";
 import { colors } from "@/assets/palette/colors";
 import { Button } from "@/components/Button";
 
@@ -23,6 +26,40 @@ export default function ViewRide() {
     return;
   }
   const imageURL = `${BASE_URL}/${rideObject.rider.profile_picture}`;
+
+
+  const { session, signOut } = useSession();
+  const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const apiURL = BASE_URL + "/api/get_info";
+
+  useEffect(() => {
+    axios
+      .get(apiURL, {
+        headers: {
+          Authorization: `Bearer ${session}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setData(response.data.data);
+        // console.log(data.id);
+        setShow(true);
+      });
+  }, []);
+
+  const sendnotification = () => {
+        axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+            subID: rideObject.rider.id.toString(),
+            appId: 25677,
+            appToken: 'D83ft1902sTCmXwwESdtvN',
+            title: `${data.first_name} has booked the ride.`,
+            message: `${data.first_name} has booked a seat in your ride.`
+       });
+       console.log("Notification sent to user", rideObject.rider.id.toString());
+      }
 
   return (
     <ScrollView className="flex-1 bg-zinc-200 dark:bg-zinc-800">
@@ -182,7 +219,7 @@ export default function ViewRide() {
         </View>
       </View>
       <View className="px-3 mb-3">
-        <Button onPress={() => console.log("H")} title={"Request Ride"} />
+        <Button onPress={sendnotification} title={"Request Ride"} />
       </View>
     </ScrollView>
   );

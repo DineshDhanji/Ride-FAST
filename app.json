@@ -17,8 +17,14 @@
         "backgroundColor": "#18181b"
       },
       "config": {
-        "googleMaps": { "apiKey": "AIzaSyA3FzKFHiA7bUcmOaubinG6wqCZt8Dw7Yk" }
-      }
+        "googleMaps": {
+          "apiKey": "AIzaSyA3FzKFHiA7bUcmOaubinG6wqCZt8Dw7Yk"
+        }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -57,6 +63,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "b5d80e26-7502-489a-9d75-411667dd5423"
+      }
+    },
+    "owner": "ameerhamza134855"
   }
 }

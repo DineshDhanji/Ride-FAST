@@ -14,7 +14,6 @@ import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import Feather from "@expo/vector-icons/Feather"; // Import Feather once
 // import { StackContext } from "@/app/(tabs)/_layout";
 import { useEffect, useState, useRef, useContext } from "react";
-// import registerNNPushToken from "native-notify";
 import axios from "axios";
 import { colors } from "@/assets/palette/colors";
 import { useSession } from "@/session/ctx";
@@ -22,7 +21,6 @@ import { Button } from "@/components/Button";
 import { Link } from "expo-router";
 
 export default function ProfileScreen() {
-  // registerNNPushToken(25677, "D83ft1902sTCmXwwESdtvN");
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const { session, signOut } = useSession();
@@ -45,6 +43,7 @@ export default function ProfileScreen() {
         },
       })
       .then((response) => {
+        console.log(response.data);
         setData(response.data.data);
         setShow(true);
       });
@@ -75,7 +74,7 @@ export default function ProfileScreen() {
     // setPhoto(photoURI.default);
   };
   const goToCamera = () => {
-    // navigation.navigate("camera");
+    navigation.navigate("camera");
   };
   return (
     <SafeAreaView className="flex-1 bg-zinc-200 dark:bg-zinc-800">
