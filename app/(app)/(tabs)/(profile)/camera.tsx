@@ -177,9 +177,9 @@ export default function CameraScreen() {
           // Update user data after successful upload
           setUserData((prev) => ({
             ...prev,
-            profile_picture: r.profile_picture.replace("/media", ""), // Update profile picture URL
+            profile_picture: r.profile_picture, // Update profile picture URL
           }));
-          navigation.navigate("index"); // Navigate back to the index screen
+          navigation.goBack(); // Navigate back to the index screen
         } else {
           console.error("Image upload failed:", response.data);
         }
