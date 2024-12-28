@@ -19,6 +19,7 @@ import { colors } from "@/assets/palette/colors";
 import { useSession } from "@/session/ctx";
 import { Button } from "@/components/Button";
 import { Link } from "expo-router";
+import { useUser } from "@/context/user";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -26,6 +27,8 @@ export default function ProfileScreen() {
   const { session, signOut } = useSession();
   const [show, setShow] = useState(false);
   const [data, setData] = useState(null);
+  const { user, setUser } = useUser();
+
   const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
   if (BASE_URL === undefined) {
     console.error("Base API URL is not defined");
@@ -45,9 +48,11 @@ export default function ProfileScreen() {
       .then((response) => {
         console.log("Data got is this ", response.data);
         setData(response.data.data);
+        setUser(response.data.data);
         setShow(true);
       });
   }, []);
+
   // Menu items with icon names
   const menuItems = [
     { icon: "settings", label: "Settings", link: "settings" },
@@ -76,6 +81,7 @@ export default function ProfileScreen() {
   const goToCamera = () => {
     navigation.navigate("camera");
   };
+
   return (
     <SafeAreaView className="flex-1 bg-zinc-200 dark:bg-zinc-800">
       {show ? (
@@ -85,15 +91,15 @@ export default function ProfileScreen() {
               <View className="flex-row items-center">
                 <TouchableOpacity onPress={goToCamera}>
                   <Image
-                    source={{ uri: `${BASE_URL}${data["profile_picture"]}` }}
+                    source={{ uri: `${BASE_URL}${user["profile_picture"]}` }}
                     className="w-16 h-16 resize-contain rounded-full"
                   />
                 </TouchableOpacity>
                 <View className="ml-4">
                   <Text className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                    {data.first_name} {data.last_name}
+                    {user.username}
                   </Text>
-                  <Text className="text-zinc-500">{data.email}</Text>
+                  <Text className="text-zinc-500">{user.email}</Text>
                 </View>
               </View>
             </View>

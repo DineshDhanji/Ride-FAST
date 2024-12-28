@@ -1,105 +1,3 @@
-// import { View, Text } from "react-native";
-// import { useState, useRef, useEffect } from "react";
-// import { useNavigation } from "expo-router";
-// import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import axios from "axios";
-// import { Button } from "@/components/Button";
-// import { useSession } from "@/session/ctx";
-// // import { StackContext } from "./_layout";
-
-// export default function CameraScreen() {
-//   const [permission, requestCameraPermission] = useCameraPermissions();
-//   const [cameraFacing, setCameraFacing] = useState("back");
-//   const { session, signOut } = useSession();
-//   const [show, setShow] = useState(false);
-//   const [data, setData] = useState(null);
-//   const cameraRef = useRef(null);
-//   const navigation = useNavigation();
-// //   const photoURI = useContext(StackContext);
-//   const photoURI = `${BASE_URL}${data["profile_picture"]}`;
-
-//   const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
-//   if (BASE_URL === undefined) {
-//     console.error("Base API URL is not defined");
-//     return;
-//   }
-
-//   const apiURL = BASE_URL + "/api/get_info";
-
-//   useEffect(() => {
-//     axios
-//       .get(apiURL, {
-//         headers: {
-//           Authorization: `Bearer ${session}`,
-//           "Content-Type": "application/json",
-//         },
-//       })
-//       .then((response) => {
-//         setData(response.data.data);
-//         setShow(true);
-//       });
-//   }, []);
-
-//   const flipCamera = () => {
-//     setCameraFacing((oldFacing) => (oldFacing === "back" ? "front" : "back"));
-//   };
-//   const capture = async () => {
-//     console.log("Capture");
-//     cameraRef.current.takePictureAsync().then((photo) => {
-//       console.log(photo);
-//       photoURI.saved = photo.uri;
-//       navigation.navigate("index");
-//     });
-//   };
-//   if (!permission) {
-//     // Camera permissions are still loading.
-//     return <View />;
-//   }
-//   console.log(permission);
-
-//   if (permission.granted === false) {
-//     return (
-//       <View className="flex justify-center flex-1 bg-zinc-800 px-5">
-//         <Text className="text-zinc-50 text-xl">
-//           Please allow camera permission.
-//         </Text>
-//         <Button onPress={requestCameraPermission} text={"Ask for permission"} />
-//       </View>
-//     );
-//   }
-
-//   return (
-//     <View className="flex flex=col justify-between flex-1 bg-zinc-800">
-//       <View className="h-max px-5">
-//         <Text className="text-zinc-50 text-3xl mt-5 mb-5 px-2">
-//           Camera
-//         </Text>
-//         <CameraView
-//           ref={cameraRef}
-//           style={{ width: "100%", height: "auto", aspectRatio: 1 }}
-//           ratio="1:1"
-//           facing={cameraFacing}
-//           animateShutter={true}
-//           shutterSound={true}
-//         />
-//         <Text className="text-center text-zinc-50 text-xl mt-3">
-//           Smile (●'◡'●)
-//         </Text>
-//       </View>
-//       <View className="h-1/5 flex justify-end  p-4">
-//         <Button
-//           onPress={flipCamera}
-//           title={
-//             cameraFacing === "back" ? "Use Front Camera" : "Use Back Camera"
-//           }
-//         />
-//         <Button onPress={capture} title="Capture" />
-//       </View>
-//     </View>
-//   );
-// }
-
 import { View, Text } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { useNavigation } from "expo-router";
@@ -107,6 +5,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import axios from "axios";
 import { Button } from "@/components/Button";
 import { useSession } from "@/session/ctx";
+import { useUser } from "@/context/user";
 
 export default function CameraScreen() {
   const [permission, requestCameraPermission] = useCameraPermissions();
@@ -115,7 +14,7 @@ export default function CameraScreen() {
   const [userData, setUserData] = useState(null);
   const cameraRef = useRef(null);
   const navigation = useNavigation();
-
+  const { user, setUser} = useUser();
   const BASE_URL = process.env.EXPO_PUBLIC_BASE_API_URL;
   if (!BASE_URL) {
     console.error("Base API URL is not defined");
@@ -136,6 +35,7 @@ export default function CameraScreen() {
       })
       .then((response) => {
         setUserData(response.data.data); // Set user data
+        setUser(response.data.data);
       })
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);

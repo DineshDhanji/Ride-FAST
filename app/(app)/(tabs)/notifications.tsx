@@ -79,8 +79,8 @@ const renderNotification = ({ item }) => (
       }}
     >
       <View className="space-y-1">
-        <Text className="text-lg font-medium text-zinc-900">{item.title}</Text>
-        <Text className="text-base text-zinc-600">{item.message}</Text>
+        <Text className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</Text>
+        <Text className="text-base text-zinc-600 dark:text-zinc-300">{item.message}</Text>
         <Text className="text-sm text-zinc-400">{item.date}</Text>
       </View>
     </TouchableOpacity>
@@ -95,9 +95,7 @@ const renderNotification = ({ item }) => (
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-50">
-      <StatusBar style="dark" />
-
+    <View className="flex-1 bg-zinc-200 dark:bg-zinc-800">
       <FlatList
         data={data}
         keyExtractor={(item) => item.notification_id}
@@ -110,6 +108,6 @@ const renderNotification = ({ item }) => (
         windowSize={5}
         removeClippedSubviews={true}
       />
-    </SafeAreaView>
+    </View>
   );
 }
