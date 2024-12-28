@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, Switch, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Switch,
+  TouchableOpacity,
+  ScrollView,
+  Appearance,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -16,8 +23,10 @@ export default function SettingsScreen() {
   const [settings, setSettings] = useState({
     notifications: true,
     locationServices: true,
-    darkMode: false,
   });
+  const [darkMode, setDarkMode] = useState(
+    Appearance.getColorScheme() === "dark" ? true : false
+  );
 
   const toggleSetting = (setting) => {
     setSettings((prevSettings) => ({
@@ -37,7 +46,7 @@ export default function SettingsScreen() {
     {
       icon: "help-circle",
       label: "Help & Support",
-      onPress: () => navigation.navigate("HelpSupport"),
+      onPress: () => navigation.navigate("help"),
     },
   ];
 
@@ -73,8 +82,11 @@ export default function SettingsScreen() {
           Dark Mode
         </Text>
         <Switch
-          value={settings.darkMode}
-          onValueChange={() => toggleSetting("darkMode")}
+          value={darkMode}
+          onValueChange={() => {
+            setDarkMode(dm => !dm)
+            Appearance.setColorScheme(!darkMode ? "dark" : "light");
+          }}
         />
       </View>
 

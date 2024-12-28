@@ -30,6 +30,7 @@ export default function App() {
         <Stack.Screen name="faq" options={{ title: "FAQ" }} />
         <Stack.Screen name="about" options={{ title: "About" }} />
         <Stack.Screen name="camera" options={{ title: "Camera" }} />
+        <Stack.Screen name="help" options={{ title: "Help & Support" }} />
       </Stack>
     </>
   );
