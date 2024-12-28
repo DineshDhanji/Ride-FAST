@@ -73,7 +73,7 @@ export default function RidesHistoryScreen() {
           {item.date} at {item.time}
         </Text>
         <View className="flex-row items-center mt-1">
-          <Feather name="map-pin" size={24} color="black" />{" "}
+          <Feather name="map-pin" size={24} color="black" />
           <Text className="text-sm text-zinc-700 ml-1">
             {item.from} to {item.to}
           </Text>

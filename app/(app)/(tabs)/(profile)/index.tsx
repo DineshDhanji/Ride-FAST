@@ -43,7 +43,7 @@ export default function ProfileScreen() {
         },
       })
       .then((response) => {
-        console.log(response.data);
+        console.log("Data got is this ", response.data);
         setData(response.data.data);
         setShow(true);
       });
@@ -100,7 +100,7 @@ export default function ProfileScreen() {
 
             <View className="p-4">
               {menuItems.map((item, index) => (
-                <Link asChild href={`/${item.link}`}>
+                <Link asChild href={`/${item.link}`} key={index}>
                   <TouchableOpacity
                     key={index}
                     className={`flex-row items-center py-4 px-2`}

@@ -60,8 +60,8 @@
 
 //   if (permission.granted === false) {
 //     return (
-//       <View className="flex justify-center flex-1 bg-slate-800 px-5">
-//         <Text className="text-slate-50 text-xl">
+//       <View className="flex justify-center flex-1 bg-zinc-800 px-5">
+//         <Text className="text-zinc-50 text-xl">
 //           Please allow camera permission.
 //         </Text>
 //         <Button onPress={requestCameraPermission} text={"Ask for permission"} />
@@ -70,10 +70,10 @@
 //   }
 
 //   return (
-//     <View className="flex flex=col justify-between flex-1 bg-slate-800">
+//     <View className="flex flex=col justify-between flex-1 bg-zinc-800">
 //       <View className="h-max px-5">
-//         <Text className="text-slate-50 text-3xl mt-5 mb-5 px-2">
-//           Camera 
+//         <Text className="text-zinc-50 text-3xl mt-5 mb-5 px-2">
+//           Camera
 //         </Text>
 //         <CameraView
 //           ref={cameraRef}
@@ -83,7 +83,7 @@
 //           animateShutter={true}
 //           shutterSound={true}
 //         />
-//         <Text className="text-center text-slate-50 text-xl mt-3">
+//         <Text className="text-center text-zinc-50 text-xl mt-3">
 //           Smile (●'◡'●)
 //         </Text>
 //       </View>
@@ -145,43 +145,46 @@ export default function CameraScreen() {
   };
 
   const capture = async () => {
-    try {
-      if (!cameraRef.current) return;
+    if (!cameraRef.current) return;
 
-      // Capture the image
-      const photo = await cameraRef.current.takePictureAsync({
-        base64: true, // Include base64 data for uploading
-      });
+    // Capture the image
+    const photo = await cameraRef.current.takePictureAsync({
+      base64: true, // Include base64 data for uploading
+    });
 
-      // Prepare FormData for upload
-      const formData = new FormData();
-      formData.append("photo", {
-        uri: photo.uri, // File URI
-        name: "photo.jpg", // File name
-        type: "image/jpeg", // File type
-      });
+    // Prepare FormData for upload
+    const formData = new FormData();
+    formData.append("photo", {
+      uri: photo.uri, // File URI
+      name: "photo.jpg", // File name
+      type: "image/jpeg", // File type
+    });
 
-      const response = await axios.post(uploadURL, formData, {
+    axios
+      .post(uploadURL, formData, {
         headers: {
           Authorization: `Bearer ${session}`,
           "Content-Type": "multipart/form-data",
         },
-      });
-
-      if (response.status === 200) {
-        console.log("Image uploaded successfully:", response.data);
-        // Update user data after successful upload
-        setUserData((prev) => ({
-          ...prev,
-          profile_picture: response.data.profile_picture, // Update profile picture URL
-        }));
-        navigation.navigate("index"); // Navigate back to the index screen
-      } else {
-        console.error("Image upload failed:", response.data);
-      }
-    } catch (error) {
-      console.error("Error capturing or uploading photo:", error);
-    }
+      })
+      .then((response) => {
+        const r = response.data;
+        console.log(response.data);
+        console.log(r.profile_picture);
+        console.log("as ",r.profile_picture.replace("/media", ""));
+        if (r.saved === true) {
+          console.log("Image uploaded successfully:", r);
+          // Update user data after successful upload
+          setUserData((prev) => ({
+            ...prev,
+            profile_picture: r.profile_picture.replace("/media", ""), // Update profile picture URL
+          }));
+          navigation.navigate("index"); // Navigate back to the index screen
+        } else {
+          console.error("Image upload failed:", response.data);
+        }
+      })
+      .catch((error) => console.error("Error uploading photo:", error));
   };
 
   if (!permission) {
@@ -191,21 +194,21 @@ export default function CameraScreen() {
 
   if (permission.granted === false) {
     return (
-      <View className="flex justify-center flex-1 bg-slate-800 px-5">
-        <Text className="text-slate-50 text-xl">
+      <View className="flex justify-center flex-1 bg-zinc-200 dark:bg-zinc-800 px-5">
+        <Text className="text-zinc-950 dark:text-zinc-50 text-xl">
           Please allow camera permission.
         </Text>
-        <Button onPress={requestCameraPermission} text="Ask for permission" />
+        <Button onPress={requestCameraPermission} title="Ask for permission" />
       </View>
     );
   }
 
   return (
-    <View className="flex flex=col justify-between flex-1 bg-slate-800">
+    <View className="flex flex=col justify-between flex-1 bg-zinc-200 dark:bg-zinc-800">
       <View className="h-max px-5">
-        <Text className="text-slate-50 text-3xl mt-5 mb-5 px-2">Camera</Text>
+        <Text className="text-zinc-50 text-3xl mt-5 mb-5 px-2">Camera</Text>
         {userData && (
-          <Text className="text-slate-50 text-lg">
+          <Text className="text-zinc-50 text-lg">
             Hello, {userData.first_name} {userData.last_name}!
           </Text>
         )}
@@ -217,7 +220,7 @@ export default function CameraScreen() {
           animateShutter={true}
           shutterSound={true}
         />
-        <Text className="text-center text-slate-50 text-xl mt-3">
+        <Text className="text-center text-zinc-50 text-xl mt-3">
           Smile (●'◡'●)
         </Text>
       </View>
