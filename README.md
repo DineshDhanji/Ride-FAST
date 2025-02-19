@@ -1,50 +1,76 @@
-# Welcome to your Expo app 👋
+# Ride-FAST - Fast & Reliable Ride-Sharing Platform
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<!-- ![Ride-FAST Demo](./assets/images/adaptive-icon.png)   -->
+<div style="position: relative">
+  <!-- Cover Image -->
+  <img src="./assets/images/background.jpg" width="100%" height="200rem" style="object-fit: cover" alt="Cover Image">
+  
+  <!-- Main Image (Icon) -->
+  <img src="./assets/images/icon - transparent background.png" width="200" height="200" style="background-color: transparent; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); object-fit: contain" alt="Main Icon">
+</div>
 
-## Get started
+## Table of Contents
+- [Ride-FAST - Fast \& Reliable Ride-Sharing Platform](#ride-fast---fast--reliable-ride-sharing-platform)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction 🚖](#introduction-)
+  - [UI 🌠](#ui-)
+  - [Features ✨](#features-)
+  - [Technologies Used 💻](#technologies-used-)
+  - [Configuration 🔧](#configuration-)
+  - [Contributing 🤝](#contributing-)
 
-1. Install dependencies
+## Introduction 🚖
+Ride-FAST is a modern ride-sharing platform designed to connect passengers with drivers swiftly and efficiently. Built with performance and user experience in mind, this full-stack application provides seamless ride booking, real-time tracking, and secure payment processing.
 
-   ```bash
-   npm install
-   ```
+## UI 🌠
+<image src="./ui/Login Page.jpg" alt="Login page">
+<image src="./ui/Signup Page.jpg" alt="sign up page">
+<image src="./ui/Home Page.jpg" alt="Home page">
+<image src="./ui/Create Ride Page.jpg" alt="Create ride page">
+<image src="./ui/Search Page.jpg" alt="Search page">
+<image src="./ui/Notifications Page.jpg" alt="Notifications page">
+<image src="./ui/Setting Page.jpg" alt="Setting page">
+<image src="./ui/Appearance Page.jpg" alt="Appearance page">
+<image src="./ui/About Page.jpg" alt="About page">
+<image src="./ui/FAQ Page.jpg" alt="FAQ page">
 
-2. Start the app
+## Features ✨
+- **User Authentication**: Secure JWT-based login/signup system
+- **Ride Management**:  
+  ✓ Request rides with pickup/drop locations  
+  ✓ Real-time ride status tracking  
+  ✓ Ride history with details
+- **Driver Matching**: Intelligent algorithm to connect riders with nearest drivers
+- **Interactive UI**: Responsive dashboard for both riders and drivers
+- **Rating System**: Post-ride rating and feedback system
+- **Admin Panel**: Manage users, rides, and platform settings
 
-   ```bash
-    npx expo start
-   ```
+## Technologies Used 💻
+**Frontend**:  
+- React.js  
+- Redux (State Management)  
+- Axios (HTTP Client)  
+- Map Integration (Google Maps/Mapbox)  
 
-In the output, you'll find options to open the app in a
+**Backend**:  
+- Django   
+- SQLite (Database)  
+- JSON Web Tokens (Authentication)  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**DevOps**:  
+- Docker (Containerization)  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+## Configuration 🔧
+Create `.env` file in backend directory:
+```env
+EXPO_PUBLIC_BASE_API_URL=your_backend
+EXPO_PUBLIC_GOOGLE_MAP_API_KEY=your_google_map_api_key 
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Contributing 🤝
+Contributions are welcome! Please follow these steps:
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
